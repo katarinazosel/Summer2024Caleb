@@ -1,0 +1,37 @@
+# Post-processing steps for batch correction
+
+
+sc.tl.paga(adata, groups='louvain') # change groups to the name of the clusters
+sc.tl.draw_graph(adata, init_pos='paga', random_state=123, layout='fa')
+sc.pl.draw_graph(adata, color='louvain', legend_loc='on data') # plotting
+
+
+
+Figure outputs into folder titled gene expression
+Also plot where labeling by batch, clusters 
+sc.pl.umap(adata, color=['INS', 'GCG', 'SST']) - expand to plot all below and batch, cluster
+
+
+markers = {"Alpha":["GCG", "LOXL4", "GC", "CRYBA2","TTR","IRX2","TM4SF4","ARX","MAFB", "PGR"], #https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5092539/
+           "Beta":["INS", "IAPP","MAFA","NPTX2","DLK1","TGFBR3","SYT13","SMAD9","CDKN1C","TFCP2L1","SIX3","MNX1","MBP5","PIR", "G6PC2","ADCYAP1","PDX1"], #"ADCYAP1","PDX1",#ADCYAP1#https://www.nature.com/artiMAFBcles/s41587-022-01219-z#MOESM10 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5092539/
+           "New Beta":[  "SPD", "INS", "MMP-2","CK-19"],#https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2842599/
+            "Delta":["SST", "RBP4", "HHEX", "PCSK1", "PRG4" "BHLHE41", "LEPR"],#https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5092539/
+            "Acinar":["GP2", "CTRC", "AMY2A", "CPA1", "SYCN"], #https://www.nature.com/articles/s41598-019-40481-1/tables/1
+            "Cancer stem cells":[ "OCT4","MYC","KLF4","SOX2"],
+            "Ductal":["KRT19","SOX9"], #https://www.nature.com/articles/s41598-019-40481-1/tables/1
+            "Endothelial":["CD93","ACE","CD143","C1qR1","CD31","CD34"], #https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7749106/
+            "Macrophages":["CD206","CD68","CD163"],
+            "PP": ["PPY","ETV1","ARX","PAX6","SERTM1""CARTPT","SLITRK6"], #https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5092539/
+            "Pancreatic progenitor": ["CPA1","NEUROG3","NKX6.1","PTF1A","SOX9","C-MYC","SOX4","NEUROD1"], #https://www.nature.com/articles/s41467-017-00561-0
+            "Additional factors": ["SOX2","OCT4","NANOG","PDX1"] 
+            }
+
+for cell_type, genes in markers.items():
+        print(f"marker gene of {cell_type}")
+        for gene in genes:
+            if gene in adata.var_names:
+                sc.pl.draw_graph(adata, color=gene, use_raw=True, ncols=2,save=f'{gene}_expression_plot_type.png')
+                plt.show()
+
+adata.write("./name.h5ad")
+adata = sc.read_h5ad("./name.h5ad")
